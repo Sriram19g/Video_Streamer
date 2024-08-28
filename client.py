@@ -27,5 +27,11 @@ while True:
     
     frame_data = data [:msg_size]
     data=data[msg_size:]
+    frame=pickle.loads(frame_data)
+    cv2.imshow("Received",frame)
+    key=cv2.waitKey(1) & 0xFF
+    if key==ord('q'):
+        break
 
     
+client_socket.close()
