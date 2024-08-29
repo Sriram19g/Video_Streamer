@@ -12,6 +12,7 @@ data=b""
 
 payload_size=struct.calcsize("Q")
 
+
 while True:
     while len(data) < payload_size:
         packet=client_socket.recv(4*1024)  ##4KB
