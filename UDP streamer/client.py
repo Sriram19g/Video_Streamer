@@ -17,3 +17,4 @@ username=os.getlogin()
 user=pickle.dumps((host_ip,sysname,username))
 
 client_socket.sendto(user,server_addr)
+
