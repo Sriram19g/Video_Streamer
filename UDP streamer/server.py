@@ -1,4 +1,4 @@
-import cv2,socket,time,base64,numpy as np,pickle
+import cv2,socket,time,base64,numpy as np,pickle,imutils
 
 BUFF_SIZE=65536
 server_socket=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
@@ -11,7 +11,7 @@ socket_addr=(host_ip,port)
 server_socket.bind(socket_addr)
 print(f"Listening at : {socket_addr}")
 
-
+vid=cv2.VideoCapture('nature.mp4')
 fps,st,frame_to_count,cnt=(0,0,20,0)
 
 while True:
@@ -19,19 +19,23 @@ while True:
     info=pickle.loads(info)
     space=" "*5
     print(f"Got connection from {info[0]}{space}{info[1]}-->{info[2]} ")
-    vid=cv2.VideoCapture('nature.mp4')
+    
     if not vid.isOpened():
         print("Can't Open file")
         continue
-    while True:
+    WIDTH=500
+    while (vid.isOpened()):
         ret,frame=vid.read()
         if not ret: 
             break
-        height=1000
-        width=1000
-        cv2.resize(frame,(height,width))
+        frame=imutils.resize(frame,width=WIDTH)
+        encoded,buffer=cv2.imencode('.jpg',frame,[cv2.IMWRITE_JPEG_QUALITY,80])
+        message=base64.b64encode(buffer)
+        server_socket.sendto(message,client_addr)
+
         cv2.imshow('Video', frame)
         if cv2.waitKey(1) & 0xFF ==ord('q'):
+            server_socket.close()
             break
     vid.release()
 
